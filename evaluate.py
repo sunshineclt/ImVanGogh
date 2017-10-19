@@ -12,16 +12,18 @@ from utils import save_img, get_image
 
 def transform_forward(path_in, path_out, checkpoint_dir):
     image_input = get_image(path_in)
-    image_input = np.array(image_input)
+    image_input = np.array([image_input])
     image_shape = image_input.shape
 
     config = tf.ConfigProto(allow_soft_placement=True)
     config.gpu_options.allow_growth = True
-    with tf.Graph().as_default(), tf.Session(config=config) as sess:
+    with tf.Graph().as_default(), tf.device('/cpu:0'), tf.Session(config=config) as sess:
         initial_image = tf.placeholder(tf.float32,
                                        shape=image_shape,
                                        name='initial_image')
-        transformed_image_tensor = transform.net(initial_image)
+        with tf.variable_scope("Main_graph"):
+            with tf.variable_scope("Transform_net"):
+                transformed_image_tensor = transform.net(initial_image)
         saver = tf.train.Saver()
         if os.path.isdir(checkpoint_dir):
             ckpt = tf.train.get_checkpoint_state(checkpoint_dir)

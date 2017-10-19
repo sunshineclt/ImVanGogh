@@ -83,12 +83,12 @@ def check_opts(args):
     assert os.path.exists(args.style_image), "style image not found!"
     assert os.path.exists(args.train_path), "train dir not found!"
     assert os.path.exists(args.vgg_path), "vgg parameter data not found!"
-    if args.test or args.test_dir:
+    if args.test_image or args.test_dir:
         assert os.path.exists(args.test_image), "test img not found!"
         assert os.path.exists(args.test_dir), "test dir not found!"
     assert args.epochs > 0
     assert args.batch_size > 0
-    assert args.checkpoint_iterations > 0
+    assert args.checkpoint_freq > 0
     assert args.content_weight >= 0
     assert args.style_weight >= 0
     assert args.tv_weight >= 0
@@ -98,7 +98,7 @@ def check_opts(args):
 def trim_data(content_targets, batch_size):
     mod = len(content_targets) % batch_size
     if mod > 0:
-        logging.INFO("Train set has been trimmed slightly..")
+        logging.info("Train set has been trimmed slightly..")
         return content_targets[:-mod]
 
 

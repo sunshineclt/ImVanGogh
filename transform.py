@@ -20,7 +20,7 @@ def net(image):
 
 
 def _conv_layer(input_layer, num_filters, filter_size, strides, scope, relu=True):
-    with tf.VariableScope(scope):
+    with tf.variable_scope(scope):
         weights_init = _create_conv_parameters(input_layer, num_filters, filter_size)
         strides_shape = [1, strides, strides, 1]
         output_net = tf.nn.conv2d(input_layer, weights_init, strides_shape, padding='SAME')
@@ -31,7 +31,7 @@ def _conv_layer(input_layer, num_filters, filter_size, strides, scope, relu=True
 
 
 def _conv_transpose_layer(input_layer, num_filters, filter_size, strides, scope):
-    with tf.VariableScope(scope):
+    with tf.variable_scope(scope):
         weights_init = _create_conv_parameters(input_layer, num_filters, filter_size, transpose=True)
 
         batch_size, rows, cols, in_channels = [i.value for i in input_layer.get_shape()]
@@ -45,7 +45,7 @@ def _conv_transpose_layer(input_layer, num_filters, filter_size, strides, scope)
 
 
 def _residual_block(input_layer, filter_size, scope):
-    with tf.VariableScope(scope):
+    with tf.variable_scope(scope):
         tmp = _conv_layer(input_layer, 128, filter_size, 1, "conv1")
         return input_layer + _conv_layer(tmp, 128, filter_size, 1, "conv2", relu=False)
 
