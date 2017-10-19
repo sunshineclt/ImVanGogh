@@ -61,24 +61,24 @@ def train(content_targets, style_target, content_weight, style_weight,
         # compute transformed image's content features
         # TODO: maybe reuse
         with tf.variable_scope("VGG_transformed"):
-            transformed_content_net = vgg.net(vgg_path, transformed_image_pre)
+            transformed_vgg_result = vgg.net(vgg_path, transformed_image_pre)
 
         assert utils.tensor_size_without_batch(content_net[CONTENT_LAYER]) == \
-               utils.tensor_size_without_batch(transformed_content_net[CONTENT_LAYER])
+               utils.tensor_size_without_batch(transformed_vgg_result[CONTENT_LAYER])
 
         # compute content loss
         with tf.variable_scope("content_loss"):
             content_size = utils.tensor_size_without_batch(content_net[CONTENT_LAYER]) * batch_size
             content_loss = content_weight * 2 * \
                            tf.nn.l2_loss(content_net[CONTENT_LAYER] -
-                                         transformed_content_net[CONTENT_LAYER]) \
+                                         transformed_vgg_result[CONTENT_LAYER]) \
                            / content_size
 
         # compute style loss
         with tf.variable_scope("style_loss"):
             style_losses = []
             for style_layer_name in STYLE_LAYERS:
-                layer = content_net[style_layer_name]
+                layer = transformed_vgg_result[style_layer_name]
                 transformed_image_grams = compute_gram_with_batch(layer)
                 style_gram = style_features[style_layer_name]
                 style_losses.append(2 * tf.nn.l2_loss(transformed_image_grams - style_gram) / style_gram.size)
