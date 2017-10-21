@@ -60,7 +60,6 @@ def check_opts(args):
     assert os.path.exists(args.in_path), "in path dir not found!"
     if os.path.isdir(args.out_path):
         assert os.path.exists(args.out_path), 'out dir not found!'
-    assert args.batch_size > 0
 
 
 def main():
