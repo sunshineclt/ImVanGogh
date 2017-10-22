@@ -51,7 +51,7 @@ def train(content_targets, style_target, content_weight, style_weight,
         initial_image_pre = vgg.centralize(initial_image)
 
         # precompute initial image's content features
-        with tf.variable_scope("VGG_content_target"):
+        with tf.variable_scope("VGG", reuse=False):
             content_net = vgg.net(vgg_path, initial_image_pre)
 
         # transform initial image through transform net
@@ -61,7 +61,7 @@ def train(content_targets, style_target, content_weight, style_weight,
 
         # compute transformed image's content features
         # TODO: maybe reuse
-        with tf.variable_scope("VGG_transformed"):
+        with tf.variable_scope("VGG", reuse=True):
             transformed_vgg_result = vgg.net(vgg_path, transformed_image_pre)
 
         assert utils.tensor_size_without_batch(content_net[CONTENT_LAYER]) == \
