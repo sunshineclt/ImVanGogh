@@ -46,22 +46,18 @@ def train(content_targets, style_target, content_weight, style_weight,
             features = sess.run(net[layer], feed_dict={style_input: style_image_input})
             style_features[layer] = compute_gram(features)
 
-    with tf.Graph().as_default(), tf.Session() as sess, tf.variable_scope("Main_graph"):
+    with tf.Graph().as_default(), tf.Session() as sess:
         initial_image = tf.placeholder(tf.float32, shape=batch_shape, name="initial_image")
         initial_image_pre = vgg.centralize(initial_image)
-
-        # precompute initial image's content features
-        with tf.variable_scope("VGG", reuse=False) as vgg_scope:
-            content_net = vgg.net(vgg_path, initial_image_pre)
 
         # transform initial image through transform net
         with tf.variable_scope("Transform_net"):
             transformed_image = transform.net(initial_image / 255.0)
             transformed_image_pre = vgg.centralize(transformed_image)
 
-        # compute transformed image's content features
-        # TODO: maybe reuse
-        with tf.variable_scope(vgg_scope, reuse=True):
+        # compute initial image's and transformed image's content features
+        with tf.variable_scope("VGG", reuse=True):
+            content_net = vgg.net(vgg_path, initial_image_pre)
             transformed_vgg_result = vgg.net(vgg_path, transformed_image_pre)
 
         assert utils.tensor_size_without_batch(content_net[CONTENT_LAYER]) == \

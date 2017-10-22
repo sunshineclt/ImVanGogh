@@ -21,9 +21,8 @@ def transform_forward(path_in, path_out, checkpoint_dir):
         initial_image = tf.placeholder(tf.float32,
                                        shape=image_shape,
                                        name='initial_image')
-        with tf.variable_scope("Main_graph"):
-            with tf.variable_scope("Transform_net"):
-                transformed_image_tensor = transform.net(initial_image)
+        with tf.variable_scope("Transform_net"):
+            transformed_image_tensor = transform.net(initial_image)
         saver = tf.train.Saver()
         if os.path.isdir(checkpoint_dir):
             ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
