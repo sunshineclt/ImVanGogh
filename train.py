@@ -101,8 +101,8 @@ def train(content_targets, style_target, content_weight, style_weight,
             train_operator = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
 
         runlog_dir = os.path.join(save_dir, 'run_log')
-        train_writer = tf.summary.FileWriter(runlog_dir,
-                                             sess.graph)
+        train_writer = tf.summary.FileWriter(runlog_dir)
+        train_writer.add_graph(sess.graph)
 
         sess.run(tf.global_variables_initializer())
         for epoch in range(epochs):
@@ -125,7 +125,7 @@ def train(content_targets, style_target, content_weight, style_weight,
                                      initial_image: batch_data
                                  })
                     saver = tf.train.Saver()
-                    checkpoint_dir = os.path.join(save_dir, 'style.ckpt')
+                    checkpoint_dir = os.path.join(save_dir, 'checkpoint/style.ckpt')
                     saver.save(sess, checkpoint_dir)
                     logging.info('Epoch %d, Iteration: %d, Loss: %s' % (epoch, iteration, total_loss_record))
                     logging.info(
@@ -152,7 +152,7 @@ def main():
 
     train(content_targets, style_target, args.content_weight, args.style_weight, args.tv_weight,
           args.vgg_path, args.epochs, args.checkpoint_freq, args.batch_size,
-          args.checkpoint_dir, args.learning_rate, args.test_image, args.test_dir)
+          args.save_dir, args.learning_rate, args.test_image, args.test_dir)
 
 
 if __name__ == '__main__':

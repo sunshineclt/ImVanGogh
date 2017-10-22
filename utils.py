@@ -56,9 +56,9 @@ def build_parser():
     parser.add_argument('--checkpoint-freq', type=int,
                         dest='checkpoint_freq', help='checkpoint frequency',
                         default=2000)
-    parser.add_argument('--checkpoint-dir', type=str,
-                        dest='checkpoint_dir', help='dir to save checkpoint in',
-                        default='/big/run_log/checkpoint')
+    parser.add_argument('--save-dir', type=str,
+                        dest='save_dir', help='dir to save checkpoint and run log in',
+                        default='/big/run_log/')
     parser.add_argument('--content-weight', type=float,
                         dest='content_weight',
                         help='content weight (default %(default)s)',
@@ -79,7 +79,7 @@ def build_parser():
 
 
 def check_opts(args):
-    assert os.path.exists(args.checkpoint_dir), "checkpoint dir not found!"
+    assert os.path.exists(args.save_dir), "save dir not found!"
     assert os.path.exists(args.style_image), "style image not found!"
     assert os.path.exists(args.train_path), "train dir not found!"
     assert os.path.exists(args.vgg_path), "vgg parameter data not found!"
