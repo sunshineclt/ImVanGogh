@@ -30,8 +30,9 @@ def compute_gram_with_batch(layer):
 
 def train(content_targets, style_target, content_weight, style_weight,
           tv_weight, vgg_path, epochs=2, checkpoint_frequency=1000,
-          batch_size=4, checkpoint_dir='saver/fns.ckpt',
+          batch_size=4, save_dir='saver/fns.ckpt',
           learning_rate=1e-3, test_image=None, test_dir=None):
+
     batch_shape = (batch_size, 256, 256, 3)
     style_features = {}
 
@@ -98,6 +99,11 @@ def train(content_targets, style_target, content_weight, style_weight,
 
         with tf.variable_scope("train"):
             train_operator = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(loss)
+
+        runlog_dir = os.path.join(save_dir, 'run_log')
+        train_writer = tf.summary.FileWriter(runlog_dir,
+                                             sess.graph)
+
         sess.run(tf.global_variables_initializer())
         for epoch in range(epochs):
             num_train_data = len(content_targets)
@@ -119,6 +125,7 @@ def train(content_targets, style_target, content_weight, style_weight,
                                      initial_image: batch_data
                                  })
                     saver = tf.train.Saver()
+                    checkpoint_dir = os.path.join(save_dir, 'style.ckpt')
                     saver.save(sess, checkpoint_dir)
                     logging.info('Epoch %d, Iteration: %d, Loss: %s' % (epoch, iteration, total_loss_record))
                     logging.info(
@@ -145,7 +152,7 @@ def main():
 
     train(content_targets, style_target, args.content_weight, args.style_weight, args.tv_weight,
           args.vgg_path, args.epochs, args.checkpoint_freq, args.batch_size,
-          os.path.join(args.checkpoint_dir, 'style.ckpt'), args.learning_rate, args.test_image, args.test_dir)
+          args.checkpoint_dir, args.learning_rate, args.test_image, args.test_dir)
 
 
 if __name__ == '__main__':
